@@ -124,5 +124,13 @@ func TestAddDelete(t *testing.T) {
 		if c.tail.previous != c.head {
 			t.Errorf("The head (%s) is not tail.previous (%s)!", c.head.index, c.tail.previous.index)
 		}
+
+		if c.GetTheNextItemIndex(c.head.index) != c.tail.index {
+			t.Errorf("The next index of the head (%s) is not tail (%s)!", c.GetTheNextItemIndex(c.head.index), c.tail.index)
+		}
+
+		if c.GetTheCacheSize() != 2 {
+			t.Errorf("The cache size (%v) is not correct, must be %v!", c.GetTheCacheSize(), 2)
+		}
 	})
 }
