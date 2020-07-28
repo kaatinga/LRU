@@ -4,6 +4,8 @@ import (
 	"reflect"
 	"sync"
 	"testing"
+
+	"github.com/kaatinga/calc"
 )
 
 func TestNewCache(t *testing.T) {
@@ -33,6 +35,45 @@ func TestNewCache(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewCache() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCache_Add(t *testing.T) {
+
+	c, err := NewCache(3)
+	if err != nil {
+		t.Errorf("testCache was not created")
+	}
+
+	var TheOldestIndex = "1+1"
+
+	tests := []struct {
+		index  string
+		wantOk bool
+	}{
+		{ TheOldestIndex, true},
+		{ "1+2", true},
+		{ "1+3", true},
+	}
+	var result int64
+	var gottenIndex string
+		for _, tt := range tests {
+		t.Run(tt.index, func(t *testing.T) {
+
+			result, err = calc.Calc(tt.index)
+			if err != nil {
+				t.Errorf("Calc package returned an error")
+			}
+
+			if gotOk := c.Add(tt.index, result); gotOk != tt.wantOk {
+				t.Errorf("Increment() = %v, want %v", gotOk, tt.wantOk)
+			}
+
+			gottenIndex = c.GetTheOldestIndex()
+			if gottenIndex != TheOldestIndex {
+				t.Errorf("Cache last index = %v, want %v", gottenIndex, TheOldestIndex)
 			}
 		})
 	}
