@@ -168,6 +168,17 @@ func (c *Cache) GetTheNextItemIndex(index string) (nextIndex string) {
 	return
 }
 
+// GetThePreviousItemIndex returns the index of the next item of the pointed out item's index
+func (c *Cache) GetThePreviousItemIndex(index string) (previousIndex string) {
+	c.mx.RLock()
+	defer c.mx.RUnlock()
+
+	if c.items[index].previous != nil {
+		previousIndex = c.items[index].previous.index
+	}
+	return
+}
+
 // GetMinCount returns the oldest index count field value
 func (c *Cache) GetMinCount() byte {
 	c.mx.RLock()
