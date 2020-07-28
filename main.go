@@ -141,7 +141,7 @@ func (c *Cache) GetTheOldestIndex() string {
 	return c.order.tail.index
 }
 
-// GetTheCacheSize returns the current cache size that cannot be bigger than capacity
+// GetTheCacheSize returns the current Cache size that cannot be bigger than capacity
 func (c *Cache) GetTheCacheSize() byte {
 	c.mx.RLock()
 	defer c.mx.RUnlock()
@@ -176,6 +176,18 @@ func (c *Cache) GetThePreviousItemIndex(index string) (previousIndex string) {
 	if c.items[index].previous != nil {
 		previousIndex = c.items[index].previous.index
 	}
+	return
+}
+
+// GetStoredData() returns the related data stored in the Cache
+func (c *Cache) GetStoredData(index string) (data interface{}, ok bool) {
+
+	var item *item
+	item, ok = c.items[index]
+	if ok {
+		data = item.data
+	}
+
 	return
 }
 

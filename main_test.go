@@ -74,6 +74,15 @@ func TestAddDelete(t *testing.T) {
 				t.Errorf("Increment() = %v, want %v", gotOk, tt.wantOk)
 			}
 
+			data, ok := c.GetStoredData(tt.index)
+			if !ok {
+				t.Errorf("Data are not stored! data: %v, want %v", data.(int64), result)
+			}
+
+			if data.(int64) != result {
+				t.Errorf("Data are not correct! data: %v, want %v", data.(int64), result)
+			}
+
 			gottenIndex = c.GetTheOldestIndex()
 			if gottenIndex != TheOldestIndex {
 				t.Errorf("Cache last index = %v, want %v", gottenIndex, TheOldestIndex)
@@ -81,7 +90,7 @@ func TestAddDelete(t *testing.T) {
 		})
 	}
 
-	t.Run("delete 1+1", func(t *testing.T) {
+	t.Run("checks after deleting 1+1", func(t *testing.T) {
 
 		gotOk = c.Delete(TheOldestIndex)
 		if gotOk != true {
