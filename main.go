@@ -98,6 +98,7 @@ func (c *Cache) Delete(index string) (ok bool) {
 	gottenItem.next = nil
 
 	delete(c.items, index)
+	c.size--
 	return
 }
 
@@ -138,6 +139,33 @@ func (c *Cache) GetTheOldestIndex() string {
 	defer c.mx.RUnlock()
 
 	return c.order.tail.index
+}
+
+// GetTheCacheSize returns the current cache size that cannot be bigger than capacity
+func (c *Cache) GetTheCacheSize() byte {
+	c.mx.RLock()
+	defer c.mx.RUnlock()
+
+	return c.size
+}
+
+// GetTheHeadIndex returns the current head index
+func (c *Cache) GetTheHeadIndex() string {
+	c.mx.RLock()
+	defer c.mx.RUnlock()
+
+	return c.order.head.index
+}
+
+// GetTheNextItemIndex returns the index of the next item of the pointed out item's index
+func (c *Cache) GetTheNextItemIndex(index string) (nextIndex string) {
+	c.mx.RLock()
+	defer c.mx.RUnlock()
+
+	if c.items[index].next != nil {
+		nextIndex = c.items[index].next.index
+	}
+	return
 }
 
 // GetMinCount returns the oldest index count field value
