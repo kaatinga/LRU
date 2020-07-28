@@ -40,7 +40,7 @@ func TestNewCache(t *testing.T) {
 	}
 }
 
-func TestCache_Add(t *testing.T) {
+func TestAddDelete(t *testing.T) {
 
 	c, err := NewCache(3)
 	if err != nil {
@@ -53,13 +53,15 @@ func TestCache_Add(t *testing.T) {
 		index  string
 		wantOk bool
 	}{
-		{ TheOldestIndex, true},
-		{ "1+2", true},
-		{ "1+3", true},
+		{TheOldestIndex, true},
+		{"1+2", true},
+		{"1+3", true},
 	}
+
 	var result int64
 	var gottenIndex string
-		for _, tt := range tests {
+	var gotOk bool
+	for _, tt := range tests {
 		t.Run(tt.index, func(t *testing.T) {
 
 			result, err = calc.Calc(tt.index)
@@ -67,7 +69,8 @@ func TestCache_Add(t *testing.T) {
 				t.Errorf("Calc package returned an error")
 			}
 
-			if gotOk := c.Add(tt.index, result); gotOk != tt.wantOk {
+			gotOk = c.Add(tt.index, result)
+			if gotOk != tt.wantOk {
 				t.Errorf("Increment() = %v, want %v", gotOk, tt.wantOk)
 			}
 
@@ -77,4 +80,49 @@ func TestCache_Add(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("delete 1+1", func(t *testing.T) {
+
+		gotOk = c.Delete(TheOldestIndex)
+		if gotOk != true {
+			t.Errorf("Delete returned %v, want %v", gotOk, true)
+		}
+
+		gottenIndex = c.GetTheOldestIndex()
+		if gottenIndex != "1+2" {
+			t.Errorf("Cache last index = %v, want %v", gottenIndex, "1+2")
+		}
+
+		if c.tail.index != "1+2" {
+			t.Errorf("The tail index is %v, want %v", c.tail.index, "1+2")
+		}
+
+		if c.head.index != "1+3" {
+			t.Errorf("The head index is %v, want %v", c.head.index, "1+3")
+		}
+
+		if c.head.previous != nil {
+			t.Errorf("The head previous is %v, want %s", c.head.previous.index, "nil")
+		}
+
+		if c.tail.next != nil {
+			t.Errorf("The tail next is %v, want %s", c.head.next.index, "nil")
+		}
+
+		if c.head.next == nil {
+			t.Errorf("The head.next is nil!")
+		}
+
+		if c.tail.previous == nil {
+			t.Errorf("The tail.previous is nil!")
+		}
+
+		if c.head.next != c.tail {
+			t.Errorf("The head.next (%s) is not tail (%s)!", c.head.next.index, c.tail.index)
+		}
+
+		if c.tail.previous != c.head {
+			t.Errorf("The head (%s) is not tail.previous (%s)!", c.head.index, c.tail.previous.index)
+		}
+	})
 }
