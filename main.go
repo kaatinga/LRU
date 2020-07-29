@@ -138,7 +138,11 @@ func (c *Cache) GetTheOldestIndex() string {
 	c.mx.RLock()
 	defer c.mx.RUnlock()
 
-	return c.order.tail.index
+	if c.order.tail != nil {
+		return c.order.tail.index
+	}
+
+	return ""
 }
 
 // GetTheCacheSize returns the current Cache size that cannot be bigger than capacity
@@ -154,7 +158,11 @@ func (c *Cache) GetTheHeadIndex() string {
 	c.mx.RLock()
 	defer c.mx.RUnlock()
 
-	return c.order.head.index
+	if c.order.head != nil {
+		return c.order.head.index
+	}
+
+	return ""
 }
 
 // GetTheNextItemIndex returns the index of the next item of the pointed out item's index
@@ -162,7 +170,8 @@ func (c *Cache) GetTheNextItemIndex(index string) (nextIndex string) {
 	c.mx.RLock()
 	defer c.mx.RUnlock()
 
-	if c.items[index].next != nil {
+	item, ok := c.items[index]
+	if ok && item.next != nil {
 		nextIndex = c.items[index].next.index
 	}
 	return
@@ -173,7 +182,8 @@ func (c *Cache) GetThePreviousItemIndex(index string) (previousIndex string) {
 	c.mx.RLock()
 	defer c.mx.RUnlock()
 
-	if c.items[index].previous != nil {
+	item, ok := c.items[index]
+	if ok && item.previous != nil {
 		previousIndex = c.items[index].previous.index
 	}
 	return
