@@ -172,7 +172,7 @@ func (c *Cache) GetTheNextItemIndex(index string) (nextIndex string) {
 
 	item, ok := c.items[index]
 	if ok && item.next != nil {
-		nextIndex = c.items[index].next.index
+		nextIndex = item.next.index
 	}
 	return
 }
@@ -184,12 +184,12 @@ func (c *Cache) GetThePreviousItemIndex(index string) (previousIndex string) {
 
 	item, ok := c.items[index]
 	if ok && item.previous != nil {
-		previousIndex = c.items[index].previous.index
+		previousIndex = item.previous.index
 	}
 	return
 }
 
-// GetStoredData() returns the related data stored in the Cache
+// GetStoredData() returns the related data stored in the Cache if the index is in the cache
 func (c *Cache) GetStoredData(index string) (data interface{}, ok bool) {
 
 	var item *item
@@ -201,12 +201,16 @@ func (c *Cache) GetStoredData(index string) (data interface{}, ok bool) {
 	return
 }
 
-// GetMinCount returns the oldest index count field value
-func (c *Cache) GetMinCount() byte {
+// GetTheOldestCount returns the oldest index count field value
+func (c *Cache) GetTheOldestCount() byte {
 	c.mx.RLock()
 	defer c.mx.RUnlock()
 
-	return c.order.tail.count
+	if c.order.tail != nil {
+		return c.order.tail.count
+	}
+
+	return 0
 }
 
 // add is an internal package method to keep order of the items
