@@ -85,10 +85,11 @@ func (c *Cache) Delete(index string) (ok bool) {
 			gottenItem.previous.next = nil
 			c.order.tail = gottenItem.previous
 		}
-	}
-
-	if gottenItem.next != nil {
-		if gottenItem.previous == nil {
+	} else {
+		if gottenItem.next == nil { // It means the item is the last
+			c.order.head = nil
+			c.order.tail = nil
+		} else {
 			gottenItem.next.previous = nil
 			c.order.head = gottenItem.next
 		}
