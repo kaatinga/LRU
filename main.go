@@ -67,7 +67,8 @@ func (c *Cache) Increment(index string) (ok bool) {
 	return
 }
 
-// Wipe removes every item of the cache saving the Cache size
+// Wipe removes every item of the cache saving the Cache size.
+// The original items map will be garbage-collected eventually; you don't need to clear it manually.
 func (c *Cache) Wipe() {
 	*c = Cache{
 		items:    make(map[string]*item, c.capacity),
@@ -113,7 +114,8 @@ func (c *Cache) Delete(index string) (ok bool) {
 	return
 }
 
-// Add adds the new item to the Cache. Trows away the oldest item unless the Cache has free space
+// Add adds the new item to the Cache. Trows away the oldest item unless the Cache has free space.
+// The data will be overwritten
 func (c *Cache) Add(index string, data interface{}) (ok bool) {
 	c.mx.Lock()
 	defer c.mx.Unlock()
