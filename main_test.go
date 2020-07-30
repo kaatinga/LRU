@@ -146,4 +146,28 @@ func TestAddDelete(t *testing.T) {
 			t.Errorf("The cache size (%v) is not correct, must be %v!", c.GetTheCacheSize(), 2)
 		}
 	})
+
+	t.Run("wipe", func(t *testing.T) {
+		c.Wipe()
+
+		if c.size != 0 {
+			t.Errorf("The cache size (%v) is not correct, must be %v!", c.GetTheCacheSize(), 0)
+		}
+
+		if c.capacity != 3 {
+			t.Errorf("The cache capacity (%v) is not correct, must be %v!", c.capacity, 3)
+		}
+
+		if !reflect.DeepEqual(c.items, map[string]*item{}) {
+			t.Errorf("The cache items must be nil, now is: %v", c.items)
+		}
+
+		if c.head != nil {
+			t.Errorf("The head is not nil, now is: %v", c.head)
+		}
+
+		if c.tail != nil {
+			t.Errorf("The tail is not nil, now is: %v", c.tail)
+		}
+	})
 }

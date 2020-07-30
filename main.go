@@ -67,6 +67,16 @@ func (c *Cache) Increment(index string) (ok bool) {
 	return
 }
 
+// Wipe removes every item of the cache saving the Cache size
+func (c *Cache) Wipe() {
+	*c = Cache{
+		items:    make(map[string]*item, c.capacity),
+		size:     0,
+		capacity: c.capacity,
+		order:    order{head: nil, tail: nil},
+	}
+}
+
 // Delete deletes an item Cache with the index in the signature
 func (c *Cache) Delete(index string) (ok bool) {
 	c.mx.Lock()
