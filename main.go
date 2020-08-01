@@ -126,8 +126,13 @@ func (c *Cache) Add(index string, data interface{}) (ok bool) {
 	// Check if we have free space
 	ok = c.capacity > c.size
 	if ok {
-		c.size++
+
+		// Check if maximum count is reached
+		if c.size != 255 {
+			c.size++
+		}
 	} else {
+
 		// Delete in the list the oldest item
 		itemToDelete := c.order.tail
 		delete(c.items, itemToDelete.index)
@@ -214,7 +219,7 @@ func (c *Cache) GetStoredData(index string) (data interface{}, ok bool) {
 	return
 }
 
-// GetTheOldestCount returns the oldest index count field value
+// GetTheOldestCount returns the oldest index count
 func (c *Cache) GetTheOldestCount() byte {
 	c.mx.RLock()
 	defer c.mx.RUnlock()
@@ -224,6 +229,19 @@ func (c *Cache) GetTheOldestCount() byte {
 	}
 
 	return 0
+}
+
+// GetTheItemCount returns the index count
+func (c *Cache) GetTheItemCount(index string) (byte, bool) {
+	c.mx.RLock()
+	defer c.mx.RUnlock()
+
+	item, ok := c.items[index]
+	if ok {
+		return item.count, ok
+	}
+
+	return 0, ok
 }
 
 // add is an internal package method to keep order of the items
